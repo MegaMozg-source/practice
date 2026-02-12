@@ -44,8 +44,8 @@ object ColorRepository {
         "yellow" to Color.Yellow,
         "orange" to Color(0xFFFFA500),
         "indigo" to Color(0xFF4B0082),
-        "violet" to Color(0xFF8F00FF),
-        "pink" to Color(0xFFFFC0CB)
+        "violet" to Color(0xFF8F00FF)
+
     )
 
     fun findColor(name: String): Color? {
