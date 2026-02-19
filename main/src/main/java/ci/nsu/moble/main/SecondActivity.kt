@@ -30,9 +30,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import ci.nsu.moble.main.ui.theme.PracticeTheme
+import androidx.navigation.compose.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.sp
 
 // TODO: crate sealed class with 3 routes
-
+sealed class Screen(val route: String) {
+    object Home : Screen("home")
+    object ScreenOne : Screen("screen_one")
+    object ScreenTwo : Screen("screen_two")
+}
 class SecondActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,66 +55,107 @@ class SecondActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecondActivityScreen() {
-    // todo: create nav controller
-    var selectedItem by remember { mutableStateOf(0) }
+
+    val navController = rememberNavController() // 🔹 создаём контроллер
     val context = LocalContext.current
+
     var receivedText by remember { mutableStateOf("") }
+
     if (context is Activity) {
         receivedText = context.intent.getStringExtra("text_data") ?: "No text received"
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(
-            title = { Text(receivedText) }, navigationIcon = {
-                IconButton(onClick = {
-                    // TODO: create intent and start MainActivity
-                    if (context is Activity) {
-                        context.finish()
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+
+        // 🔹 TOP BAR
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = receivedText,
+                        maxLines = Int.MAX_VALUE, // разрешаем много строк
+                        softWrap = true
                     )
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Blue, titleContentColor = Color.White
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        if (context is Activity) {
+                            context.finish() // возврат в MainActivity
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Blue,
+                    titleContentColor = Color.White
+                )
             )
-        )
-    }, bottomBar = {
-        NavigationBar {
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Home") },
-                label = { Text("Home") },
-                selected = selectedItem == 0,
+        },
 
-                onClick = {
-                    // TODO: navigate to home screen by navController
-                    selectedItem = 0
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.List, contentDescription = "Screen One") },
-                label = { Text("Screen One") },
-                selected = selectedItem == 1,
+        // 🔹 BOTTOM NAVIGATION
+        bottomBar = {
 
-                onClick = {
-                    // TODO: navigate to screen one
-                    selectedItem = 1
-                })
-            NavigationBarItem(
-                icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Screen Two") },
-                label = { Text("Screen Two") },
-                selected = selectedItem == 2,
-                onClick = {
-                    // TODO: navigate to screen two
-                    selectedItem = 2
-                })
+            val backStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = backStackEntry?.destination?.route
+
+            NavigationBar {
+
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Home, null) },
+                    label = { Text("Home") },
+                    selected = currentRoute == Screen.Home.route,
+                    onClick = {
+                        navController.navigate(Screen.Home.route)
+                    }
+                )
+
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.List, null) },
+                    label = { Text("Screen One") },
+                    selected = currentRoute == Screen.ScreenOne.route,
+                    onClick = {
+                        navController.navigate(Screen.ScreenOne.route)
+                    }
+                )
+
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Settings, null) },
+                    label = { Text("Screen Two") },
+                    selected = currentRoute == Screen.ScreenTwo.route,
+                    onClick = {
+                        navController.navigate(Screen.ScreenTwo.route)
+                    }
+                )
+            }
         }
-    }) { innerPadding ->
-        // TODO: create a nav graph with 3 screens
-        // NavHost() {}
-        // composable(Screen.Home.route) { HomeScreen() }
+
+    ) { innerPadding ->
+
+        // 🔹 NAV HOST
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+
+            composable(Screen.Home.route) {
+                HomeScreen()
+            }
+
+            composable(Screen.ScreenOne.route) {
+                ScreenOne()
+            }
+
+            composable(Screen.ScreenTwo.route) {
+                ScreenTwo()
+            }
+        }
     }
 }
 
@@ -117,4 +165,21 @@ fun HomeScreenPreview() {
     PracticeTheme {
         SecondActivityScreen()
     }
+}
+
+@Composable
+fun HomeScreen() {
+    Text(text = "This is Home Screen",
+    fontSize = 24.sp)
+
+}
+
+@Composable
+fun ScreenOne() {
+    Text(text = "This is Screen One", fontSize = 24.sp)
+}
+
+@Composable
+fun ScreenTwo() {
+    Text(text = "This is Screen Two", fontSize = 24.sp)
 }

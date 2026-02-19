@@ -21,6 +21,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
+import android.content.Intent
+import androidx.compose.material3.TextField
+import androidx.compose.foundation.layout.fillMaxWidth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,13 +47,26 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // TODO:  нужно добавить  TextField
+
+        // 🔹 TextField для ввода текста
+        TextField(
+            value = text,
+            onValueChange = { text = it },
+            label = { Text("Введите текст") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // 🔹 Кнопка открытия SecondActivity
         Button(
             onClick = {
-                // TODO:  нужно добавить кнопку которая по клику открывает второе активити через интент
+                val intent = Intent(context, SecondActivity::class.java)
+                intent.putExtra("text_data", text) // передаём строку
+                context.startActivity(intent)
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
