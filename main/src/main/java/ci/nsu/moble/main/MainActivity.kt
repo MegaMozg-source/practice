@@ -61,7 +61,7 @@ fun MainScreenActivity(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        // 🔹 Кнопка открытия SecondActivity
+        // 🔹 Кнопка открытия SecondActiv
         Button(
             onClick = {
                 val intent = Intent(context, SecondActivity::class.java)
