@@ -1,5 +1,6 @@
 package ci.nsu.mobile.main.data
 
+import ci.nsu.moble.main.data.dto.UserDto
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
